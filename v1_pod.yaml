@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+  namespace: dev
+  labels:
+    app: redis
+spec:
+  volumes:
+    - name: log-volume
+      hostPath:
+        path: /var/log/webapp
+        type: DirectoryOrCreate
+  securityContext:
+    runAsUser: 1000
+  initContainers:
+    - name: init-service
+      image: image-name
+      command: [""]
+    - name: init-service-2
+      image: image-2
+      command: [""]
+  containers:
+    - name: redis
+      image: redis:latest
+      serviceAccountName: name-of-service-account #
+      securityContext:
+        runAsUser: 1000
+        capabilities: # capabilities only supported a container level not pod level
+          add:
+            - "MAC_ADMIN"
+            - "KILL"
+      command:
+        - sleep
+        - "4200"
+      args:
+        - "1234"
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 6379
+      livenessProbe:
+        httpGet:
+          path: /api/live
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 15
+        failureThreshold: 4
+        tcpSocket:
+          port: 5432
+        exec:
+          command:
+            - "is_live"
+      readinessProbe:
+        httpGet:
+          path: /api/ready
+          port: 8080
+        initialDelaySeconds: 10 # delay before probe
+        periodSeconds: 20 # specify how often to probe
+        failureThreshold: 5 #  the pod will stop to probe by default after 3 attempts
+        # exec:
+        #   command:
+        #     - "echo"
+        #     - "/app/is/ready"
+        # tcpSocket:
+        #   port: 6379 - for TCO
+        # httpGet:
+        #   path: /api/ready
+        #   port: 6379 - for HTTP
+      envFrom:
+        - secretRef:
+            name: db-secret
+      env:
+        - name: REDIS_PASSWORD
+          value: "12345"
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_PASSWORD
+              name: myapp-config
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              key: DATABASE_USER
+              name: myapp-config
+        - name: DATABASE_PORT
+          valueFrom:
+            secretKeyRef:
+              key: DB_PORT
+              name: app-secret
+  tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "random-val"
+      effect: "NoSchedule"
+  nodeSelector:
+    size: Large # identify the right node to place pod on - label node prior to creating the pod
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: size
+                operator: In # can also use NotIn, Exists (when using exists you do not need the values)
+                values:
+                  - "Large" # makes sure the pod is placed in the node(s) with any value specified in the array of values
+# kubectl taint nodes node-name app=random-val:NoSchedule - taint
+# kubectl describe node kubemaster | grep Taint - shows taint applied to the master node

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-config
+data:
+  DATABASE_PASSWORD: abcdef
+  DATABASE_USER: jane-doe

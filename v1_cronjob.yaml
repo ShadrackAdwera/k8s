@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mycronjob
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello
+              image: busybox:1.28
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure
+# ┌───────────── minute (0 - 59)
+# │ ┌───────────── hour (0 - 23)
+# │ │ ┌───────────── day of the month (1 - 31)
+# │ │ │ ┌───────────── month (1 - 12)
+# │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday;
+# │ │ │ │ │                                   7 is also Sunday on some systems)
+# │ │ │ │ │                                   OR sun, mon, tue, wed, thu, fri, sat
+# │ │ │ │ │
+# * * * * *
+
+# 0 0 13 * 5 - the task must be started every Friday at midnight, as well as on the 13th of each month at midnight
+# 30 21 * * * runs 21.30 hours everyday
