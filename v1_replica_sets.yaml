@@ -19,3 +19,7 @@ spec:
           image: redis:latest
           ports:
             - containerPort: 6379
+      volumes:
+        - name: my-volume
+          persistentVolumeClaim:
+            claimName: mypc
