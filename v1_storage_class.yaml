@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: v1-aws-io2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: io1
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - debug
+volumeBindingMode: Immediate
+# using a storage class you dont gotta create a PV anymore manually
