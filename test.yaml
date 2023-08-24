@@ -1,34 +1,10 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: internal-policy
-spec:
-  podSelector:
-    matchLabels:
-      role: db
-  policyTypes:
-    - Egress
-    - Ingress
-  ingress:
-    - {}
-  egress:
-    - to:
-        - podSelector:
-            matchLabels:
-              name: payroll
-      ports:
-        - protocol: TCP
-          port: 8080
-    - to:
-        - podSelector:
-            matchLabels:
-              name: mysql
-      ports:
-        - protocol: TCP
-          port: 3306
-    - ports:
-        - port: 53
-          protocol: UDP
-        - port: 53
-          protocol: TCP
-# Create a network policy to allow traffic from the Internal application only to the payroll-service and db-service. Disable ingress.
+  name: delayed-volume-sc
+provisioner: kubernetes.io/no-provisioner
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - debug
+volumeBindingMode: WaitForFirstConsumer
