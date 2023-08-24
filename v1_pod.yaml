@@ -11,6 +11,9 @@ spec:
       hostPath:
         path: /var/log/webapp
         type: DirectoryOrCreate
+    - name: my-pvc-volume
+      persistentVolumeClaim:
+        claimName: mypvc
   securityContext:
     runAsUser: 1000
   initContainers:
@@ -23,6 +26,9 @@ spec:
   containers:
     - name: redis
       image: redis:latest
+      volumeMounts:
+        - name: my-vol
+          mountPath: /logs
       serviceAccountName: name-of-service-account #
       securityContext:
         runAsUser: 1000
