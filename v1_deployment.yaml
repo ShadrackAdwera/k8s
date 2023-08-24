@@ -22,6 +22,10 @@ spec:
               cpu: "500m"
           ports:
             - containerPort: 5000
+      volumes:
+        - name: my-pvc
+          persistentVolumeClaim:
+            claimName: mypc
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
