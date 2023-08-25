@@ -23,3 +23,5 @@ spec:
         - name: my-volume
           persistentVolumeClaim:
             claimName: mypc
+      hostname: headless-service-hostname
+      subdomain: pod-subdomain-name

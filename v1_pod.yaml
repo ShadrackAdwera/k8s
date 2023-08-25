@@ -14,6 +14,8 @@ spec:
     - name: my-pvc-volume
       persistentVolumeClaim:
         claimName: mypvc
+  subdomain: redis-h # same name as name of the headless service
+  hostname: pod-name # specifying the two creates a DNS record with the Pod name as well
   securityContext:
     runAsUser: 1000
   initContainers:

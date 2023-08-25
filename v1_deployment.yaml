@@ -22,6 +22,8 @@ spec:
               cpu: "500m"
           ports:
             - containerPort: 5000
+      subdomain: name-of-headless-service-h
+      hostname: pod-hostname
       volumes:
         - name: my-pvc
           persistentVolumeClaim:
