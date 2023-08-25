@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mystatefulset
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  serviceName: redis-h # name of a headless service
+  # podManagementPolicy: OrderedReady or Parallel - default is ordered ready but parallel creates all pods at the same time with unique names
+  replicas: 3 # pods created in an ordered, graceful deployment each with a unique DNS record on the network
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: registry.k8s.io/nginx-slim:0.8
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates: # this is basically a PVC config - associates each pod with its own PVC
+    - metadata:
+        name: www
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+# StatefulSet deploy pods at a time
+# You can create a master-slave deployment using StatefulSets
+# Point slave to reach master at instance-0
+# Replicate from 0 as more instances are spun up
+# Do not need to define subdomains or hostname - the SS does this for you based on pod name(hostname) and assigns subdomains based on the serviceName
