@@ -1,0 +1,32 @@
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "bob" to read pods in the "default" namespace.
+# You need to already have a Role named "developer" in that namespace.
+kind: RoleBinding
+metadata:
+  name: crud-pods
+  namespace: default
+subjects:
+  # You can specify more than one "subject"
+  - kind: User
+    name: bob # "name" is case sensitive
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: developer # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to CRUD nodes.
+kind: ClusterRoleBinding
+metadata:
+  name: crud-all-nodes
+subjects:
+  - kind: Group
+    name: manager # Name is case sensitive
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: node-crud
+  apiGroup: rbac.authorization.k8s.io

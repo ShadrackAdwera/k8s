@@ -1,0 +1,29 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer
+  namespace: default
+rules:
+  - apiGroups: [""] # for core groups you can leave the apiGroups as blank
+    resources: ["pods"]
+    resourceNames: ["pod-1", "pod-2"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["ConfigMap"]
+    verbs: ["list", "get", "create", "update"]
+# can CRUD pods, CRU ConfigMaps
+
+# create role, link user to that role
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: node-crud
+rules:
+  - apiGroups: [""]
+    #
+    # at the HTTP level, the name of the resource for accessing Node
+    # objects is "nodes"
+    resources: ["nodes"]
+    verbs: ["get", "watch", "list", "create", "delete"]

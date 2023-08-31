@@ -1,10 +1,13 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
-  name: delayed-volume-sc
-provisioner: kubernetes.io/no-provisioner
-reclaimPolicy: Retain
-allowVolumeExpansion: true
-mountOptions:
-  - debug
-volumeBindingMode: WaitForFirstConsumer
+  name: dev-user-binding
+  namespace: default
+subjects:
+  - kind: User
+    name: dev-user
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: developer
+  apiGroup: rbac.authorization.k8s.io

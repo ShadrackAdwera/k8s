@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+current-context: developer@development # makes this the default context
+
+clusters:
+  - cluster:
+      certificate-authority: ca.cert # better to specify full path to certificate - /etc/kubernetes/pki/ca.crt
+      # certificate-authority-data: optionally get the value of the certificate encode it in base64 then use it here - this usage replaces the certificate-authority
+      server: https://development:6443
+    name: development
+
+users:
+  - name: developer
+    user:
+      client-certificate: developer.crt
+      client-key: developer.key
+
+contexts:
+  - context:
+      cluster: development #same name for cluster
+      user: developer # same name for user
+      namespace: tech # adding this means that switching to this context automatically puts you in this namespace
+    name: developer@development
+# this is all that is required, you do not need to do anything else, these values are read by the kubectl command
+# placing this file in the path: /root/.kube/config makes it the default kubeconfig -> mv your-kube-config /root/.kube/config
+# k config view - view the Config file
+# k config view --kubeconfig=my-custom-config
+# k config use-context context-name : changes made reflects in the file
+# k config --kubeconfig=/root/my-kube-config(location of config file) use-context research
+
+# grep enable-admission-plugins /etc/kubernetes/manifests/kube-apiserver.yaml - show enabled admission controllers
+# edit the /etc/kubernetes/manifests/kube-apiserver.yaml to enable more admission controllers
+# to disable default admission controllers --disable-admission-plugins=DefaultStorageClass
+# Since the kube-apiserver is running as pod you can check the process to see enabled and disabled plugins: ps -ef | grep kube-apiserver | grep admission-plugins
